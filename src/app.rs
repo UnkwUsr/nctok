@@ -53,6 +53,16 @@ impl App {
         };
         self.state.select(Some(i));
     }
+
+    fn first(&mut self) {
+        self.state.select(Some(0));
+    }
+
+    fn last(&mut self) {
+        if !self.items.is_empty() {
+            self.state.select(Some(self.items.len() - 1));
+        }
+    }
 }
 
 fn get_list_items() -> Vec<MyListItem> {
@@ -90,6 +100,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Resu
                 KeyCode::Char('q') => return Ok(()),
                 KeyCode::Char('j') => app.next(),
                 KeyCode::Char('k') => app.previous(),
+                KeyCode::Char('g') => app.first(),
+                KeyCode::Char('G') => app.last(),
                 _ => {}
             }
         }
