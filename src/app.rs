@@ -27,31 +27,19 @@ impl App {
     }
 
     fn next(&mut self) {
-        let i = match self.state.selected() {
-            Some(i) => {
-                if i >= self.items.len() - 1 {
-                    0
-                } else {
-                    i + 1
-                }
+        if let Some(i) = self.state.selected() {
+            if i < (self.items.len() - 1) {
+                self.state.select(Some(i + 1));
             }
-            None => 0,
-        };
-        self.state.select(Some(i));
+        }
     }
 
     fn previous(&mut self) {
-        let i = match self.state.selected() {
-            Some(i) => {
-                if i == 0 {
-                    self.items.len() - 1
-                } else {
-                    i - 1
-                }
+        if let Some(i) = self.state.selected() {
+            if i > 0 {
+                self.state.select(Some(i - 1));
             }
-            None => 0,
-        };
-        self.state.select(Some(i));
+        }
     }
 
     fn first(&mut self) {
