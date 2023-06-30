@@ -1,4 +1,6 @@
 use crossterm::event::{self, Event, KeyCode};
+use tokei::Report;
+
 use std::io;
 use tui::{backend::Backend, widgets::TableState, Terminal};
 
@@ -12,7 +14,7 @@ pub struct MyListItem {
 
 pub struct App {
     pub state: TableState,
-    pub items: Vec<MyListItem>,
+    pub items: Vec<Report>,
 }
 
 impl App {
@@ -53,30 +55,33 @@ impl App {
     }
 }
 
-fn get_list_items() -> Vec<MyListItem> {
+pub fn get_list_items() -> Vec<Report> {
     let config = tokei::Config::default();
+    let mut languages = tokei::Languages::new();
+    languages.get_statistics(&["./"], &[], &config);
+    let language = languages.total();
+    // let reports = Vec::new();
 
-    let mut items = std::fs::read_dir(".")
-        .unwrap()
-        .map(|x| x.unwrap().path())
-        .map(|x| {
-            let mut languages = tokei::Languages::new();
-            languages.get_statistics(&[&x], &[], &config);
+    // // TODO: what is btreemap? maybe it should be iterated differently?
+    let mut reports: Vec<Report> = language.children.into_iter().flat_map(|x| x.1).collect();
 
-            let mut direntry = x.display().to_string();
-            direntry.drain(0..2);
+    // println!("{:?}", reports);
+    // todo!();
 
-            MyListItem {
-                direntry,
-                count: languages.total().code,
-            }
-        })
-        .collect::<Vec<MyListItem>>();
+    // let mut reports = std::fs::read_dir(".")
+    //     .unwrap()
+    //     .map(|x| x.unwrap().path())
+    //     .map(|x| {
+    //         // direntry.drain(0..2);
+    //         Report::new(x)
+    //     })
+    //     .collect::<Vec<Report>>();
     // TODO: maybe sort in order: folders first
-    items.sort_by_key(|x| x.count);
-    items.reverse();
+    // println!("{:?}", reports);
+    reports.sort_by_key(|x| x.stats.lines());
+    reports.reverse();
 
-    items
+    reports
 }
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {

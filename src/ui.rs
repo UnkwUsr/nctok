@@ -17,9 +17,9 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
 
     let rows = app.items.iter().map(|x| {
         let cells = [
-            Cell::from(x.count.to_string()),
+            Cell::from(x.stats.lines().to_string()),
             // TODO: highlight differently folders and files
-            Cell::from(x.direntry.as_ref()),
+            Cell::from(x.name.display().to_string()),
         ];
         Row::new(cells).height(1)
     });
