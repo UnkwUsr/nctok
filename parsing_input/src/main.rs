@@ -1,36 +1,48 @@
-struct DirEntry {
-    name: String,
-    number: usize,
-    // if children is None - it is file, otherwise it is directory
-    children: Option<Vec<DirEntry>>,
+#[derive(Debug)]
+enum HashEntry {
+    Value(usize),
+    Children(HashMap<String, HashEntry>),
 }
 
-impl DirEntry {
-    fn is_file(&self) -> bool {
-        return self.children.is_none();
+impl HashEntry {
+    fn new_empty_children() -> Self {
+        HashEntry::Children(HashMap::<String, HashEntry>::new())
     }
-    fn is_dir(&self) -> bool {
-        return !self.is_file();
+
+    fn add_nested_items(&mut self, path: Vec<String>, name: String, value: usize) {
+        match self {
+            HashEntry::Value(_) => (),
+            HashEntry::Children(childs) => {
+                if path.is_empty() {
+                    childs.insert(name, HashEntry::Value(value));
+                    return;
+                }
+
+                let key = path[0].clone();
+                let child = childs.entry(key).or_insert(HashEntry::new_empty_children());
+
+                child.add_nested_items(path[1..].to_vec(), name, value);
+            }
+        }
     }
 }
 
-use std::io;
+use std::{collections::HashMap, io};
 
 fn main() {
-    let root = Vec::<DirEntry>::new();
-    let _ = io::stdin()
-        .lines()
-        .map(|x| {
-            x.unwrap()
-                .split_whitespace()
-                .map(str::to_string)
-                .collect::<Vec<String>>()
-        })
-        .map(|x| DirEntry {
-            number: x.first().unwrap().parse().unwrap(),
-            name: x.last().unwrap().to_string(),
-            children: None,
-        });
+    type ParentPath = Vec<String>;
+    let mut root = HashEntry::new_empty_children();
 
-    println!("Hello, world!");
+    io::stdin().lines().for_each(|x| {
+        let binding = x.unwrap();
+        let mut y = binding.split_whitespace();
+
+        let number: usize = y.next().unwrap().parse().unwrap();
+        let name = y.next_back().unwrap().to_string();
+        let parent_path: ParentPath = y.map(str::to_string).collect();
+
+        root.add_nested_items(parent_path, name, number);
+    });
+
+    println!("{:#?}", root);
 }
