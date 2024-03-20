@@ -1,4 +1,6 @@
 mod app;
+mod entry;
+mod parser;
 mod ui;
 
 use app::{run_app, App};
@@ -12,6 +14,8 @@ use std::{error::Error, io};
 use tui::{backend::CrosstermBackend, Terminal};
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let root = parser::parse_stdin();
+
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -20,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let app = App::new();
+    let app = App::new(root);
     let res = run_app(&mut terminal, app);
 
     // restore terminal

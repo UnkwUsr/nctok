@@ -1,12 +1,7 @@
+use crate::entry::Entry;
 use std::{collections::HashMap, io};
 
 type EntryPath = Vec<String>;
-
-#[derive(Debug)]
-enum Entry {
-    Value(usize),
-    Children(HashMap<String, Entry>),
-}
 
 impl Entry {
     fn new_empty_children() -> Self {
@@ -31,7 +26,7 @@ impl Entry {
     }
 }
 
-fn main() {
+pub fn parse_stdin() -> Entry {
     let mut root = Entry::new_empty_children();
 
     io::stdin().lines().for_each(|x| {
@@ -45,5 +40,5 @@ fn main() {
         root.add(parent_path, name, number);
     });
 
-    println!("{:#?}", root);
+    root
 }

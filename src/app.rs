@@ -1,36 +1,32 @@
 use crossterm::event::{self, Event, KeyCode};
-use tokei::Report;
 
 use std::io;
 use tui::{backend::Backend, widgets::TableState, Terminal};
 
-use crate::ui::ui;
-
-#[derive(Debug)]
-pub struct MyListItem {
-    pub direntry: String,
-    pub count: usize,
-}
+use crate::{entry::Entry, ui::ui};
 
 pub struct App {
     pub state: TableState,
-    pub items: Vec<Report>,
+    pub root: Entry,
+    pub cur: Entry,
 }
 
 impl App {
-    pub fn new() -> App {
+    pub fn new(root: Entry) -> App {
         let mut state = TableState::default();
         state.select(Some(0));
 
         App {
             state,
-            items: get_list_items(),
+            cur: root,
+            // TODO: very stub. root could be root, and cur somehow reference
+            root: Entry::Value(0),
         }
     }
 
     fn next(&mut self) {
         if let Some(i) = self.state.selected() {
-            if i < (self.items.len() - 1) {
+            if i < (self.cur.items().unwrap().len() - 1) {
                 self.state.select(Some(i + 1));
             }
         }
@@ -49,39 +45,10 @@ impl App {
     }
 
     fn last(&mut self) {
-        if !self.items.is_empty() {
-            self.state.select(Some(self.items.len() - 1));
+        if !self.cur.items().unwrap().is_empty() {
+            self.state.select(Some(self.cur.items().unwrap().len() - 1));
         }
     }
-}
-
-pub fn get_list_items() -> Vec<Report> {
-    let config = tokei::Config::default();
-    let mut languages = tokei::Languages::new();
-    languages.get_statistics(&["./"], &[], &config);
-    let language = languages.total();
-    // let reports = Vec::new();
-
-    // // TODO: what is btreemap? maybe it should be iterated differently?
-    let mut reports: Vec<Report> = language.children.into_iter().flat_map(|x| x.1).collect();
-
-    // println!("{:?}", reports);
-    // todo!();
-
-    // let mut reports = std::fs::read_dir(".")
-    //     .unwrap()
-    //     .map(|x| x.unwrap().path())
-    //     .map(|x| {
-    //         // direntry.drain(0..2);
-    //         Report::new(x)
-    //     })
-    //     .collect::<Vec<Report>>();
-    // TODO: maybe sort in order: folders first
-    // println!("{:?}", reports);
-    reports.sort_by_key(|x| x.stats.lines());
-    reports.reverse();
-
-    reports
 }
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
