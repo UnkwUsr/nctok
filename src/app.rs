@@ -51,6 +51,29 @@ impl<'a> App<'a> {
                 .select(Some(self.current().children.as_ref().unwrap().len() - 1));
         }
     }
+
+    fn traverse_down(&mut self) {
+        // TODO: here is hack to fight borrow checker, can't just call self.current()
+        let asd = self.history.last().unwrap();
+
+        let cur = asd
+            .children
+            .as_ref()
+            .unwrap()
+            .iter()
+            .nth(self.state.selected().unwrap())
+            .unwrap();
+        self.history.push(cur.1);
+        self.state.select(Some(0));
+    }
+
+    fn traverse_up(&mut self) {
+        if self.history.len() == 1 {
+            return;
+        }
+        self.history.pop();
+        self.state.select(Some(0));
+    }
 }
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
@@ -62,6 +85,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Resu
                 KeyCode::Char('q') => return Ok(()),
                 KeyCode::Char('j') => app.next(),
                 KeyCode::Char('k') => app.previous(),
+                KeyCode::Char('l') => app.traverse_down(),
+                KeyCode::Char('h') => app.traverse_up(),
                 KeyCode::Char('g') => app.first(),
                 KeyCode::Char('G') => app.last(),
                 _ => {}
