@@ -4,30 +4,37 @@ use std::{collections::HashMap, io};
 type EntryPath = Vec<String>;
 
 impl Entry {
-    fn new_empty_children() -> Self {
-        Entry::Children(HashMap::<String, Entry>::new())
-    }
-
     fn add(&mut self, path: EntryPath, name: String, value: usize) {
-        match self {
-            Entry::Value(_) => (),
-            Entry::Children(childs) => {
-                if path.is_empty() {
-                    childs.insert(name, Entry::Value(value));
-                    return;
-                }
+        self.size += value;
 
-                let key = path[0].clone();
-                let child = childs.entry(key).or_insert(Entry::new_empty_children());
+        let childs = self.children.get_or_insert(HashMap::<String, Entry>::new());
 
-                child.add(path[1..].to_vec(), name, value);
-            }
+        if path.is_empty() {
+            childs.insert(
+                name,
+                Entry {
+                    size: value,
+                    children: None,
+                },
+            );
+            return;
         }
+
+        let key = path[0].clone();
+        let child = childs.entry(key).or_insert(Entry {
+            size: 0,
+            children: None,
+        });
+
+        child.add(path[1..].to_vec(), name, value);
     }
 }
 
 pub fn parse_stdin() -> Entry {
-    let mut root = Entry::new_empty_children();
+    let mut root = Entry {
+        size: 0,
+        children: None,
+    };
 
     io::stdin().lines().for_each(|x| {
         let binding = x.unwrap();

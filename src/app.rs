@@ -20,13 +20,16 @@ impl App {
             state,
             cur: root,
             // TODO: very stub. root could be root, and cur somehow reference
-            root: Entry::Value(0),
+            root: Entry {
+                size: 0,
+                children: None,
+            },
         }
     }
 
     fn next(&mut self) {
         if let Some(i) = self.state.selected() {
-            if i < (self.cur.items().unwrap().len() - 1) {
+            if i < (self.cur.children.as_ref().unwrap().len() - 1) {
                 self.state.select(Some(i + 1));
             }
         }
@@ -45,8 +48,9 @@ impl App {
     }
 
     fn last(&mut self) {
-        if !self.cur.items().unwrap().is_empty() {
-            self.state.select(Some(self.cur.items().unwrap().len() - 1));
+        if !self.cur.children.as_ref().unwrap().is_empty() {
+            self.state
+                .select(Some(self.cur.children.as_ref().unwrap().len() - 1));
         }
     }
 }
