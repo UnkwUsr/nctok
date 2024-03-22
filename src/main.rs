@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let app = App::new(root);
+    let app = App::new(&root);
     let res = run_app(&mut terminal, app);
 
     // restore terminal

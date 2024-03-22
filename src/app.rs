@@ -5,31 +5,29 @@ use tui::{backend::Backend, widgets::TableState, Terminal};
 
 use crate::{entry::Entry, ui::ui};
 
-pub struct App {
+pub struct App<'a> {
     pub state: TableState,
-    pub root: Entry,
-    pub cur: Entry,
+    pub history: Vec<&'a Entry>,
 }
 
-impl App {
-    pub fn new(root: Entry) -> App {
+impl<'a> App<'a> {
+    pub fn new(root: &'a Entry) -> App<'a> {
         let mut state = TableState::default();
         state.select(Some(0));
 
         App {
             state,
-            cur: root,
-            // TODO: very stub. root could be root, and cur somehow reference
-            root: Entry {
-                size: 0,
-                children: None,
-            },
+            history: vec![root],
         }
+    }
+
+    pub fn current(&self) -> &Entry {
+        self.history.last().unwrap()
     }
 
     fn next(&mut self) {
         if let Some(i) = self.state.selected() {
-            if i < (self.cur.children.as_ref().unwrap().len() - 1) {
+            if i < (self.current().children.as_ref().unwrap().len() - 1) {
                 self.state.select(Some(i + 1));
             }
         }
@@ -48,9 +46,9 @@ impl App {
     }
 
     fn last(&mut self) {
-        if !self.cur.children.as_ref().unwrap().is_empty() {
+        if !self.current().children.as_ref().unwrap().is_empty() {
             self.state
-                .select(Some(self.cur.children.as_ref().unwrap().len() - 1));
+                .select(Some(self.current().children.as_ref().unwrap().len() - 1));
         }
     }
 }

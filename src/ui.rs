@@ -15,7 +15,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(f.size());
 
-    let rows = app.cur.children.as_ref().unwrap().iter().map(|x| {
+    let rows = app.current().children.as_ref().unwrap().iter().map(|x| {
         let cells = [
             // TODO: calculate sum
             Cell::from(x.1.size.to_string()),
