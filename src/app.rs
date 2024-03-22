@@ -26,9 +26,11 @@ impl<'a> App<'a> {
     }
 
     fn next(&mut self) {
-        if let Some(i) = self.state.selected() {
-            if i < (self.current().children.as_ref().unwrap().len() - 1) {
-                self.state.select(Some(i + 1));
+        if let Some(childs) = &self.current().children {
+            if let Some(i) = self.state.selected() {
+                if i < (childs.len() - 1) {
+                    self.state.select(Some(i + 1));
+                }
             }
         }
     }
@@ -46,9 +48,10 @@ impl<'a> App<'a> {
     }
 
     fn last(&mut self) {
-        if !self.current().children.as_ref().unwrap().is_empty() {
-            self.state
-                .select(Some(self.current().children.as_ref().unwrap().len() - 1));
+        if let Some(childs) = &self.current().children {
+            if !childs.is_empty() {
+                self.state.select(Some(childs.len() - 1));
+            }
         }
     }
 
