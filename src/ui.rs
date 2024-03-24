@@ -29,23 +29,9 @@ fn make_table(entry: &Entry) -> Table<'static> {
             y.iter()
                 .map(|x| {
                     let (number, suffix) = styled_number(x.1.size);
+                    let name = styled_name(x.0.to_owned(), x.1.children.is_some());
 
-                    let cells = [
-                        number, suffix,
-                        // colorizing if entry have children
-                        {
-                            let t = Cell::from(x.0.to_string());
-                            if x.1.children.is_some() {
-                                t.style(
-                                    Style::default()
-                                        .fg(ratatui::style::Color::LightBlue)
-                                        .add_modifier(Modifier::BOLD),
-                                )
-                            } else {
-                                t
-                            }
-                        },
-                    ];
+                    let cells = [number, suffix, name];
                     Row::new(cells).height(1)
                 })
                 .collect()
@@ -85,4 +71,18 @@ fn styled_number(size: usize) -> (Cell<'static>, Cell<'static>) {
         ),
         t.1,
     )
+}
+
+/// colorizing if entry have children
+fn styled_name(name: String, have_children: bool) -> Cell<'static> {
+    let t = Cell::from(name);
+    if have_children {
+        t.style(
+            Style::default()
+                .fg(ratatui::style::Color::LightBlue)
+                .add_modifier(Modifier::BOLD),
+        )
+    } else {
+        t
+    }
 }
