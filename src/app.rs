@@ -23,10 +23,10 @@ impl<'a> App<'a> {
         }
     }
 
-    pub fn current(&self) -> &Entry {
+    pub fn current(&self) -> &'a Entry {
         self.history.last().unwrap().0
     }
-    pub fn under_cursor(&self) -> &Entry {
+    pub fn under_cursor(&self) -> &'a Entry {
         self.current()
             .children
             .as_ref()
@@ -68,17 +68,7 @@ impl<'a> App<'a> {
     }
 
     fn traverse_down(&mut self) {
-        // TODO: can't just call self.current() because of borrow checker. wtf
-        let (cur_entry, _) = self.history.last().unwrap();
-
-        let new = cur_entry
-            .children
-            .as_ref()
-            .unwrap()
-            .iter()
-            .nth(self.state.selected().unwrap())
-            .unwrap()
-            .1;
+        let new = self.under_cursor();
         // do not traverse into files
         if new.children.is_none() {
             return;
