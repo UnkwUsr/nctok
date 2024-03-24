@@ -28,8 +28,10 @@ fn make_table(entry: &Entry) -> Table<'static> {
         .map(|y| {
             y.iter()
                 .map(|x| {
+                    let (number, suffix) = styled_number(x.1.size);
+
                     let cells = [
-                        Cell::from(x.1.size.to_string()),
+                        number, suffix,
                         // colorizing if entry have children
                         {
                             let t = Cell::from(x.0.to_string());
@@ -51,13 +53,36 @@ fn make_table(entry: &Entry) -> Table<'static> {
         .unwrap_or(Vec::new());
 
     let widths = &[
-        Constraint::Percentage(50),
-        Constraint::Length(30),
-        Constraint::Min(10),
+        Constraint::Max(5),
+        Constraint::Max(2), // actually we need only 1, but one more just for padding
+        Constraint::Fill(1),
     ];
     Table::new(rows, widths)
         // .header(header)
         .block(Block::default().borders(Borders::ALL).title("Table"))
         .highlight_style(Style::default().bg(ratatui::style::Color::Green))
         .highlight_symbol(">> ")
+}
+
+/// format human readable (for big numbers) and colorize
+fn styled_number(size: usize) -> (Cell<'static>, Cell<'static>) {
+    let t = if size < 1000 {
+        (Cell::from(size.to_string()), Cell::default())
+    } else {
+        human_format::Formatter::default()
+            .with_decimals(1)
+            .format(size as f64)
+            .split_once(" ")
+            .map(|(x, y)| (Cell::from(x.to_owned()), Cell::from(y.to_owned())))
+            .unwrap()
+    };
+
+    (
+        t.0.style(
+            Style::default()
+                .fg(ratatui::style::Color::Yellow)
+                .add_modifier(Modifier::BOLD),
+        ),
+        t.1,
+    )
 }
