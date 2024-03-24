@@ -1,5 +1,5 @@
 use crate::entry::Entry;
-use std::{collections::HashMap, io};
+use std::{collections::BTreeMap, io};
 
 type EntryPath = Vec<String>;
 
@@ -7,7 +7,9 @@ impl Entry {
     fn add(&mut self, path: EntryPath, name: String, value: usize) {
         self.size += value;
 
-        let childs = self.children.get_or_insert(HashMap::<String, Entry>::new());
+        let childs = self
+            .children
+            .get_or_insert(BTreeMap::<String, Entry>::new());
 
         if path.is_empty() {
             childs.insert(

@@ -64,6 +64,7 @@ impl<'a> App<'a> {
             .as_ref()
             .unwrap()
             .iter()
+            .rev()
             .nth(self.state.selected().unwrap())
             .unwrap();
         self.history.push(cur.1);
