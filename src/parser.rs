@@ -15,7 +15,10 @@ pub struct ParserConfig {
 type EntryPath = Vec<String>;
 
 impl Entry {
-    fn add(&mut self, path: EntryPath, name: String, value: usize) {
+    fn add<CmpFn>(&mut self, path: EntryPath, name: String, value: usize, cmp_fn: &CmpFn)
+    where
+        CmpFn: Fn(&Entry, &Entry) -> std::cmp::Ordering,
+    {
         self.size += value;
 
         let childs = self
@@ -31,7 +34,7 @@ impl Entry {
                 },
             );
             // TODO: future optimization (probably): sort once after everything added
-            childs.sort_unstable_by(|_ak, av, _bk, bv| bv.size.cmp(&av.size));
+            childs.sort_unstable_by(|_ak, av, _bk, bv| cmp_fn(av, bv));
             return;
         }
 
@@ -41,8 +44,8 @@ impl Entry {
             children: None,
         });
 
-        child.add(path[1..].to_vec(), name, value);
-        childs.sort_unstable_by(|_ak, av, _bk, bv| bv.size.cmp(&av.size));
+        child.add(path[1..].to_vec(), name, value, cmp_fn);
+        childs.sort_unstable_by(|_ak, av, _bk, bv| cmp_fn(av, bv));
     }
 }
 
@@ -50,6 +53,12 @@ pub fn parse_stdin(config: ConfigArgs) -> Entry {
     let mut root = Entry {
         size: 0,
         children: None,
+    };
+
+    let cmp_fn = if config.reverse {
+        |a: &Entry, b: &Entry| b.size.cmp(&a.size).reverse()
+    } else {
+        |a: &Entry, b: &Entry| b.size.cmp(&a.size)
     };
 
     io::stdin().lines().for_each(|x| {
@@ -60,7 +69,7 @@ pub fn parse_stdin(config: ConfigArgs) -> Entry {
             let name = path.next_back().unwrap().to_string();
             let parent_path: EntryPath = path.map(str::to_string).collect();
 
-            root.add(parent_path, name, number);
+            root.add(parent_path, name, number, &cmp_fn);
         }
     });
 

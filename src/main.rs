@@ -17,6 +17,9 @@ use tui::{backend::CrosstermBackend, Terminal};
 #[command(version)]
 #[command(about)]
 struct ConfigArgs {
+    #[arg(long, help = "Invert sort order", default_value = "false")]
+    pub reverse: bool,
+
     #[command(flatten)]
     pub parser: parser::ParserConfig,
 }
