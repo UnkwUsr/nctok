@@ -64,7 +64,6 @@ impl<'a> App<'a> {
             .as_ref()
             .unwrap()
             .iter()
-            .rev()
             .nth(self.state.selected().unwrap())
             .unwrap();
         if cur.1.children.is_none() {

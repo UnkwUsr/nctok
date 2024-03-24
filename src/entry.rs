@@ -1,7 +1,7 @@
-use std::collections::BTreeMap;
+use indexmap::IndexMap;
 
 #[derive(Debug)]
 pub struct Entry {
     pub size: usize,
-    pub children: Option<BTreeMap<String, Entry>>,
+    pub children: Option<IndexMap<String, Entry>>,
 }

@@ -21,7 +21,6 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .as_ref()
         .map(|y| {
             y.iter()
-                .rev()
                 .map(|x| {
                     let cells = [
                         Cell::from(x.1.size.to_string()),

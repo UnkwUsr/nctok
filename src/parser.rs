@@ -1,5 +1,6 @@
 use crate::entry::Entry;
-use std::{collections::BTreeMap, io};
+use indexmap::IndexMap;
+use std::io;
 
 type EntryPath = Vec<String>;
 
@@ -9,7 +10,7 @@ impl Entry {
 
         let childs = self
             .children
-            .get_or_insert(BTreeMap::<String, Entry>::new());
+            .get_or_insert(IndexMap::<String, Entry>::new());
 
         if path.is_empty() {
             childs.insert(
@@ -19,6 +20,8 @@ impl Entry {
                     children: None,
                 },
             );
+            // TODO: future optimization (probably): sort once after everything added
+            childs.sort_unstable_by(|_ak, av, _bk, bv| bv.size.cmp(&av.size));
             return;
         }
 
