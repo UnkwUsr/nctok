@@ -1,7 +1,7 @@
 use crossterm::event::{self, Event, KeyCode};
 
+use ratatui::{backend::Backend, widgets::TableState, Terminal};
 use std::io;
-use tui::{backend::Backend, widgets::TableState, Terminal};
 
 use crate::{entry::Entry, ui::ui};
 

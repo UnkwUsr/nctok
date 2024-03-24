@@ -1,5 +1,4 @@
-use tui::{
-    backend::Backend,
+use ratatui::{
     layout::{Constraint, Direction, Layout},
     style::{Modifier, Style},
     widgets::{Block, Borders, Cell, Row, Table, TableState},
@@ -8,7 +7,7 @@ use tui::{
 
 use crate::{app::App, entry::Entry};
 
-pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
+pub fn ui(f: &mut Frame, app: &mut App) {
     // Create two chunks with equal horizontal screen space
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
@@ -37,7 +36,7 @@ fn make_table(entry: &Entry) -> Table<'static> {
                             if x.1.children.is_some() {
                                 t.style(
                                     Style::default()
-                                        .fg(tui::style::Color::LightBlue)
+                                        .fg(ratatui::style::Color::LightBlue)
                                         .add_modifier(Modifier::BOLD),
                                 )
                             } else {
@@ -51,14 +50,14 @@ fn make_table(entry: &Entry) -> Table<'static> {
         })
         .unwrap_or(Vec::new());
 
-    Table::new(rows)
+    let widths = &[
+        Constraint::Percentage(50),
+        Constraint::Length(30),
+        Constraint::Min(10),
+    ];
+    Table::new(rows, widths)
         // .header(header)
         .block(Block::default().borders(Borders::ALL).title("Table"))
-        .highlight_style(Style::default().bg(tui::style::Color::Green))
+        .highlight_style(Style::default().bg(ratatui::style::Color::Green))
         .highlight_symbol(">> ")
-        .widths(&[
-            Constraint::Percentage(50),
-            Constraint::Length(30),
-            Constraint::Min(10),
-        ])
 }
