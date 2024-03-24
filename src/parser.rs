@@ -1,6 +1,16 @@
 use crate::entry::Entry;
+use crate::ConfigArgs;
 use indexmap::IndexMap;
 use std::io;
+
+#[derive(clap::Args)]
+pub struct ParserConfig {
+    #[rustfmt::skip]
+    #[arg(long, default_value = " ", help = "Delimiter between element number value and path")]
+    pub number_delimiter: char,
+    #[arg(long, default_value = "/", help = "Separator in element path")]
+    pub path_separator: char,
+}
 
 type EntryPath = Vec<String>;
 
@@ -36,17 +46,17 @@ impl Entry {
     }
 }
 
-pub fn parse_stdin() -> Entry {
+pub fn parse_stdin(config: ConfigArgs) -> Entry {
     let mut root = Entry {
         size: 0,
         children: None,
     };
 
     io::stdin().lines().for_each(|x| {
-        if let Some((number, suffix)) = x.unwrap().split_once(" ") {
+        if let Some((number, suffix)) = x.unwrap().split_once(config.parser.number_delimiter) {
             let number: usize = number.parse().unwrap();
 
-            let mut path = suffix.split('/');
+            let mut path = suffix.split(config.parser.path_separator);
             let name = path.next_back().unwrap().to_string();
             let parent_path: EntryPath = path.map(str::to_string).collect();
 

@@ -4,7 +4,7 @@ mod parser;
 mod ui;
 
 use app::{run_app, App};
-
+use clap::Parser;
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -13,8 +13,17 @@ use crossterm::{
 use std::{error::Error, io};
 use tui::{backend::CrosstermBackend, Terminal};
 
+#[derive(clap::Parser)]
+#[command(version)]
+#[command(about)]
+struct ConfigArgs {
+    #[command(flatten)]
+    pub parser: parser::ParserConfig,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
-    let root = parser::parse_stdin();
+    let config = ConfigArgs::parse();
+    let root = parser::parse_stdin(config);
 
     // setup terminal
     enable_raw_mode()?;
