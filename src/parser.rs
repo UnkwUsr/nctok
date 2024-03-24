@@ -32,6 +32,7 @@ impl Entry {
         });
 
         child.add(path[1..].to_vec(), name, value);
+        childs.sort_unstable_by(|_ak, av, _bk, bv| bv.size.cmp(&av.size));
     }
 }
 
