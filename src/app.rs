@@ -7,7 +7,9 @@ use crate::{entry::Entry, ui::ui};
 
 pub struct App<'a> {
     pub state: TableState,
-    pub history: Vec<&'a Entry>,
+    // usize in history is tablestate before traversing down, so we can revert it back when going
+    // up
+    pub history: Vec<(&'a Entry, usize)>,
 }
 
 impl<'a> App<'a> {
@@ -17,12 +19,12 @@ impl<'a> App<'a> {
 
         App {
             state,
-            history: vec![root],
+            history: vec![(root, 0)],
         }
     }
 
     pub fn current(&self) -> &Entry {
-        self.history.last().unwrap()
+        self.history.last().unwrap().0
     }
 
     fn next(&mut self) {
@@ -56,20 +58,23 @@ impl<'a> App<'a> {
     }
 
     fn traverse_down(&mut self) {
-        // TODO: here is hack to fight borrow checker, can't just call self.current()
-        let asd = self.history.last().unwrap();
+        // TODO: can't just call self.current() because of borrow checker. wtf
+        let (cur_entry, _) = self.history.last().unwrap();
 
-        let cur = asd
+        let new = cur_entry
             .children
             .as_ref()
             .unwrap()
             .iter()
             .nth(self.state.selected().unwrap())
-            .unwrap();
-        if cur.1.children.is_none() {
+            .unwrap()
+            .1;
+        // do not traverse into files
+        if new.children.is_none() {
             return;
         }
-        self.history.push(cur.1);
+
+        self.history.push((new, self.state.selected().unwrap()));
         self.state.select(Some(0));
     }
 
@@ -77,8 +82,8 @@ impl<'a> App<'a> {
         if self.history.len() == 1 {
             return;
         }
-        self.history.pop();
-        self.state.select(Some(0));
+        let (_, prev_state) = self.history.pop().unwrap();
+        self.state.select(Some(prev_state));
     }
 }
 
