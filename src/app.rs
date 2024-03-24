@@ -26,6 +26,16 @@ impl<'a> App<'a> {
     pub fn current(&self) -> &Entry {
         self.history.last().unwrap().0
     }
+    pub fn under_cursor(&self) -> &Entry {
+        self.current()
+            .children
+            .as_ref()
+            .unwrap()
+            .iter()
+            .nth(self.state.selected().unwrap())
+            .unwrap()
+            .1
+    }
 
     fn next(&mut self) {
         if let Some(childs) = &self.current().children {

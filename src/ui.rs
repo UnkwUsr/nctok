@@ -2,11 +2,11 @@ use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout},
     style::{Modifier, Style},
-    widgets::{Block, Borders, Cell, Row, Table},
+    widgets::{Block, Borders, Cell, Row, Table, TableState},
     Frame,
 };
 
-use crate::app::App;
+use crate::{app::App, entry::Entry};
 
 pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
     // Create two chunks with equal horizontal screen space
@@ -15,8 +15,15 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(f.size());
 
-    let rows = app
-        .current()
+    let t_main = make_table(app.current());
+    let t_preview = make_table(app.under_cursor());
+
+    f.render_stateful_widget(t_main, chunks[0], &mut app.state);
+    f.render_stateful_widget(t_preview, chunks[1], &mut TableState::default());
+}
+
+fn make_table(entry: &Entry) -> Table<'static> {
+    let rows = entry
         .children
         .as_ref()
         .map(|y| {
@@ -43,7 +50,8 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
                 .collect()
         })
         .unwrap_or(Vec::new());
-    let t = Table::new(rows)
+
+    Table::new(rows)
         // .header(header)
         .block(Block::default().borders(Borders::ALL).title("Table"))
         .highlight_style(Style::default().bg(tui::style::Color::Green))
@@ -52,6 +60,5 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
             Constraint::Percentage(50),
             Constraint::Length(30),
             Constraint::Min(10),
-        ]);
-    f.render_stateful_widget(t, chunks[0], &mut app.state);
+        ])
 }
