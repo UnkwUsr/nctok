@@ -67,6 +67,9 @@ impl<'a> App<'a> {
             .rev()
             .nth(self.state.selected().unwrap())
             .unwrap();
+        if cur.1.children.is_none() {
+            return;
+        }
         self.history.push(cur.1);
         self.state.select(Some(0));
     }
