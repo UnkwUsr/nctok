@@ -39,14 +39,15 @@ pub fn parse_stdin() -> Entry {
     };
 
     io::stdin().lines().for_each(|x| {
-        let binding = x.unwrap();
-        let mut y = binding.split_whitespace();
+        if let Some((number, suffix)) = x.unwrap().split_once(" ") {
+            let number: usize = number.parse().unwrap();
 
-        let number: usize = y.next().unwrap().parse().unwrap();
-        let name = y.next_back().unwrap().to_string();
-        let parent_path: EntryPath = y.map(str::to_string).collect();
+            let mut path = suffix.split('/');
+            let name = path.next_back().unwrap().to_string();
+            let parent_path: EntryPath = path.map(str::to_string).collect();
 
-        root.add(parent_path, name, number);
+            root.add(parent_path, name, number);
+        }
     });
 
     root
