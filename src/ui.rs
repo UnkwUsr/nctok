@@ -1,7 +1,7 @@
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout},
-    style::Style,
+    style::{Modifier, Style},
     widgets::{Block, Borders, Cell, Row, Table},
     Frame,
 };
@@ -24,8 +24,19 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
                 .map(|x| {
                     let cells = [
                         Cell::from(x.1.size.to_string()),
-                        // TODO: highlight differently folders and files
-                        Cell::from(x.0.to_string()),
+                        // colorizing if entry have children
+                        {
+                            let t = Cell::from(x.0.to_string());
+                            if x.1.children.is_some() {
+                                t.style(
+                                    Style::default()
+                                        .fg(tui::style::Color::LightBlue)
+                                        .add_modifier(Modifier::BOLD),
+                                )
+                            } else {
+                                t
+                            }
+                        },
                     ];
                     Row::new(cells).height(1)
                 })
