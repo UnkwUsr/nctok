@@ -10,7 +10,7 @@ use crate::{app::App, entry::Entry};
 #[derive(clap::Args)]
 pub struct UiConfig {
     #[rustfmt::skip]
-    #[arg(long, default_value = "false", help = "Show preview window for entry under cursor")]
+    #[arg(long, default_value = "false", help = "Show preview window for entry under cursor (can also toggle with 'w' key)")]
     pub preview: bool,
 }
 

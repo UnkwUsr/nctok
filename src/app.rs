@@ -87,6 +87,10 @@ impl<'a> App<'a> {
         let (_, prev_state) = self.history.pop().unwrap();
         self.state.select(Some(prev_state));
     }
+
+    fn toggle_preview(&mut self) {
+        self.config.ui.preview ^= true;
+    }
 }
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
@@ -102,6 +106,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Resu
                 KeyCode::Char('h') => app.traverse_up(),
                 KeyCode::Char('g') => app.first(),
                 KeyCode::Char('G') => app.last(),
+
+                KeyCode::Char('w') => app.toggle_preview(),
                 _ => {}
             }
         }
