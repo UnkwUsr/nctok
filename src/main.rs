@@ -20,9 +20,9 @@ struct ConfigArgs {
     #[arg(long, help = "Invert sort order", default_value = "false")]
     pub reverse: bool,
 
-    #[command(flatten)]
+    #[command(flatten, next_help_heading = "Parser")]
     pub parser: parser::ParserConfig,
-    #[command(flatten)]
+    #[command(flatten, next_help_heading = "Interface")]
     pub ui: ui::UiConfig,
 }
 
