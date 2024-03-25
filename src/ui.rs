@@ -7,18 +7,31 @@ use ratatui::{
 
 use crate::{app::App, entry::Entry};
 
+#[derive(clap::Args)]
+pub struct UiConfig {
+    #[rustfmt::skip]
+    #[arg(long, default_value = "false", help = "Show preview window for entry under cursor")]
+    pub preview: bool,
+}
+
 pub fn ui(f: &mut Frame, app: &mut App) {
-    // Create two chunks with equal horizontal screen space
+    let constraints = if app.config.ui.preview {
+        vec![Constraint::Percentage(50); 2]
+    } else {
+        vec![Constraint::Percentage(100)]
+    };
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+        .constraints(constraints)
         .split(f.size());
 
     let t_main = make_table(app.current());
-    let t_preview = make_table(app.under_cursor());
-
     f.render_stateful_widget(t_main, chunks[0], &mut app.state);
-    f.render_stateful_widget(t_preview, chunks[1], &mut TableState::default());
+
+    if app.config.ui.preview {
+        let t_preview = make_table(app.under_cursor());
+        f.render_stateful_widget(t_preview, chunks[1], &mut TableState::default());
+    }
 }
 
 fn make_table(entry: &Entry) -> Table<'static> {

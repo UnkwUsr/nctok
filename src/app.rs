@@ -3,9 +3,10 @@ use crossterm::event::{self, Event, KeyCode};
 use ratatui::{backend::Backend, widgets::TableState, Terminal};
 use std::io;
 
-use crate::{entry::Entry, ui::ui};
+use crate::{entry::Entry, ui::ui, ConfigArgs};
 
 pub struct App<'a> {
+    pub config: ConfigArgs,
     pub state: TableState,
     // usize in history is tablestate before traversing down, so we can revert it back when going
     // up
@@ -13,11 +14,12 @@ pub struct App<'a> {
 }
 
 impl<'a> App<'a> {
-    pub fn new(root: &'a Entry) -> App<'a> {
+    pub fn new(root: &'a Entry, config: ConfigArgs) -> App<'a> {
         let mut state = TableState::default();
         state.select(Some(0));
 
         App {
+            config,
             state,
             history: vec![(root, 0)],
         }

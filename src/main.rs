@@ -22,6 +22,8 @@ struct ConfigArgs {
 
     #[command(flatten)]
     pub parser: parser::ParserConfig,
+    #[command(flatten)]
+    pub ui: ui::UiConfig,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -36,7 +38,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let app = App::new(&root);
+    // TODO: temp stub: here I do re-parse config because previous is moved to parser
+    let app = App::new(&root, ConfigArgs::parse());
     let res = run_app(&mut terminal, app);
 
     // restore terminal
