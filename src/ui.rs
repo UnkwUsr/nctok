@@ -39,7 +39,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
 }
 
 fn make_table(entry: &Entry, config: &UiConfig) -> Table<'static> {
-    let rows = entry
+    let rows: Vec<Row> = entry
         .children
         .as_ref()
         .map(|y| {
@@ -53,7 +53,7 @@ fn make_table(entry: &Entry, config: &UiConfig) -> Table<'static> {
                 })
                 .collect()
         })
-        .unwrap_or(Vec::new());
+        .unwrap_or_default();
 
     let widths = &[
         Constraint::Max(5),
@@ -75,7 +75,7 @@ fn styled_number(size: usize, human_readable: bool) -> (Cell<'static>, Cell<'sta
         human_format::Formatter::default()
             .with_decimals(1)
             .format(size as f64)
-            .split_once(" ")
+            .split_once(' ')
             .map(|(x, y)| (Cell::from(x.to_owned()), Cell::from(y.to_owned())))
             .unwrap()
     };
