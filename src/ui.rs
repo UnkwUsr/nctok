@@ -12,6 +12,9 @@ pub struct UiConfig {
     #[rustfmt::skip]
     #[arg(long, default_value = "false", help = "Show preview window for entry under cursor (can also toggle with 'w' key)")]
     pub preview: bool,
+    #[rustfmt::skip]
+    #[arg(long = "no-human-readable", default_value = "true", action = ArgAction::SetFalse, help = "Disable formatting big numbers in human-readable")]
+    pub human_readable: bool,
 }
 
 pub fn ui(f: &mut Frame, app: &mut App) {
@@ -25,23 +28,23 @@ pub fn ui(f: &mut Frame, app: &mut App) {
         .constraints(constraints)
         .split(f.size());
 
-    let t_main = make_table(app.current());
+    let t_main = make_table(app.current(), &app.config.ui);
     f.render_stateful_widget(t_main, chunks[0], &mut app.state);
 
     if app.config.ui.preview {
-        let t_preview = make_table(app.under_cursor());
+        let t_preview = make_table(app.under_cursor(), &app.config.ui);
         f.render_stateful_widget(t_preview, chunks[1], &mut TableState::default());
     }
 }
 
-fn make_table(entry: &Entry) -> Table<'static> {
+fn make_table(entry: &Entry, config: &UiConfig) -> Table<'static> {
     let rows = entry
         .children
         .as_ref()
         .map(|y| {
             y.iter()
                 .map(|x| {
-                    let (number, suffix) = styled_number(x.1.size);
+                    let (number, suffix) = styled_number(x.1.size, config.human_readable);
                     let name = styled_name(x.0.to_owned(), x.1.children.is_some());
 
                     let cells = [number, suffix, name];
@@ -64,8 +67,8 @@ fn make_table(entry: &Entry) -> Table<'static> {
 }
 
 /// format human readable (for big numbers) and colorize
-fn styled_number(size: usize) -> (Cell<'static>, Cell<'static>) {
-    let t = if size < 1000 {
+fn styled_number(size: usize, human_readable: bool) -> (Cell<'static>, Cell<'static>) {
+    let t = if size < 1000 || !human_readable {
         (Cell::from(size.to_string()), Cell::default())
     } else {
         human_format::Formatter::default()
