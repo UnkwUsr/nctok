@@ -91,6 +91,9 @@ impl<'a> App<'a> {
     fn toggle_preview(&mut self) {
         self.config.ui.preview ^= true;
     }
+    fn toggle_human_readable(&mut self) {
+        self.config.ui.human_readable ^= true;
+    }
 }
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
@@ -108,6 +111,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Resu
                 KeyCode::Char('G') => app.last(),
 
                 KeyCode::Char('w') => app.toggle_preview(),
+                KeyCode::Char('a') => app.toggle_human_readable(),
                 _ => {}
             }
         }

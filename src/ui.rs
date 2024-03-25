@@ -1,3 +1,4 @@
+use clap::ArgAction;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
     style::{Modifier, Style},
@@ -13,7 +14,7 @@ pub struct UiConfig {
     #[arg(long, default_value = "false", help = "Show preview window for entry under cursor (can also toggle with 'w' key)")]
     pub preview: bool,
     #[rustfmt::skip]
-    #[arg(long = "no-human-readable", default_value = "true", action = ArgAction::SetFalse, help = "Disable formatting big numbers in human-readable")]
+    #[arg(long = "no-human-readable", default_value = "true", action = ArgAction::SetFalse, help = "Disable formatting big numbers in human-readable (can also toggle with 'a' key)")]
     pub human_readable: bool,
 }
 
