@@ -55,11 +55,7 @@ fn make_table(entry: &Entry, config: &UiConfig) -> Table<'static> {
         })
         .unwrap_or_default();
 
-    let widths = &[
-        Constraint::Max(5),
-        Constraint::Max(2), // actually we need only 1, but one more just for padding
-        Constraint::Fill(1),
-    ];
+    let widths = make_widths(config, get_max_size(entry));
     Table::new(rows, widths)
         // .header(header)
         .block(Block::default().borders(Borders::ALL).title("Table"))
@@ -102,4 +98,26 @@ fn styled_name(name: String, have_children: bool) -> Cell<'static> {
     } else {
         t
     }
+}
+
+fn make_widths(config: &UiConfig, max: usize) -> [Constraint; 3] {
+    let max_len = (max.ilog10() + 1) as u16;
+    let number = if config.human_readable { 5 } else { max_len };
+    // for suffix 1 character is just enough, but we add one more for visual padding
+    let suffix = if config.human_readable { 2 } else { 0 };
+
+    [
+        Constraint::Max(number),
+        Constraint::Max(suffix),
+        Constraint::Fill(1),
+    ]
+}
+
+fn get_max_size(entry: &Entry) -> usize {
+    entry
+        .children
+        .as_ref()
+        .iter()
+        .next()
+        .map_or(1, |x| x.first().unwrap().1.size)
 }
