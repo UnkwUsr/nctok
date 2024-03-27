@@ -1,6 +1,5 @@
 use crate::entry::Entry;
 use crate::ConfigArgs;
-use indexmap::IndexMap;
 use std::io;
 
 #[derive(clap::Args)]
@@ -21,9 +20,7 @@ impl Entry {
     {
         self.size += value;
 
-        let childs = self
-            .children
-            .get_or_insert(IndexMap::<String, Entry>::new());
+        let childs = self.children.get_or_insert(Default::default());
 
         if path.is_empty() {
             childs.insert(
