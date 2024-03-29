@@ -1,7 +1,7 @@
 use crossterm::event::{self, Event, KeyCode};
 
 use ratatui::{backend::Backend, widgets::TableState, Terminal};
-use std::io;
+use std::{io, ops::Add};
 
 use crate::{entry::Entry, ui::ui, ConfigArgs};
 
@@ -10,7 +10,8 @@ pub struct App<'a> {
     pub state: TableState,
     // usize in history is tablestate before traversing down, so we can revert it back when going
     // up
-    pub history: Vec<(&'a Entry, usize)>,
+    // str is entry name
+    pub history: Vec<(&'a Entry, &'a str, usize)>,
 }
 
 impl<'a> App<'a> {
@@ -21,22 +22,37 @@ impl<'a> App<'a> {
         App {
             config,
             state,
-            history: vec![(root, 0)],
+            history: vec![(root, "", 0)],
         }
     }
 
     pub fn current(&self) -> &'a Entry {
         self.history.last().unwrap().0
     }
-    pub fn under_cursor(&self) -> &'a Entry {
+    pub fn under_cursor(&self) -> (&'a Entry, &'a str) {
         self.current()
             .children
             .as_ref()
             .unwrap()
             .iter()
             .nth(self.state.selected().unwrap())
+            .map(|x| (x.1, x.0.as_ref()))
             .unwrap()
-            .1
+    }
+    pub fn current_path(&self) -> String {
+        self.history
+            .iter()
+            // first item is always empty string as we initializing it (in constructor)
+            .skip(1)
+            .map(|x| x.1)
+            .fold("".to_string(), |x, y| {
+                let mut t = x + y;
+                t.push(self.config.parser.path_separator);
+                t
+            })
+    }
+    pub fn under_cursor_path(&self) -> String {
+        self.current_path().add(self.under_cursor().1)
     }
 
     fn next(&mut self) {
@@ -72,11 +88,12 @@ impl<'a> App<'a> {
     fn traverse_down(&mut self) {
         let new = self.under_cursor();
         // do not traverse into files
-        if new.children.is_none() {
+        if new.0.children.is_none() {
             return;
         }
 
-        self.history.push((new, self.state.selected().unwrap()));
+        self.history
+            .push((new.0, new.1, self.state.selected().unwrap()));
         self.state.select(Some(0));
     }
 
@@ -84,7 +101,7 @@ impl<'a> App<'a> {
         if self.history.len() == 1 {
             return;
         }
-        let (_, prev_state) = self.history.pop().unwrap();
+        let (_, _, prev_state) = self.history.pop().unwrap();
         self.state.select(Some(prev_state));
     }
 

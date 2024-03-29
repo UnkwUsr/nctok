@@ -1,7 +1,7 @@
 use clap::ArgAction;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
-    style::{Modifier, Style},
+    style::{Modifier, Style, Stylize},
     widgets::{Block, Borders, Cell, Row, Table, TableState},
     Frame,
 };
@@ -29,16 +29,18 @@ pub fn ui(f: &mut Frame, app: &mut App) {
         .constraints(constraints)
         .split(f.size());
 
-    let t_main = make_table(app.current(), &app.config.ui);
+    let t_main = make_table(app.current(), app.current_path(), &app.config.ui);
     f.render_stateful_widget(t_main, chunks[0], &mut app.state);
 
     if app.config.ui.preview {
-        let t_preview = make_table(app.under_cursor(), &app.config.ui);
+        let entry = app.under_cursor().0;
+        let path = app.under_cursor_path();
+        let t_preview = make_table(entry, path, &app.config.ui);
         f.render_stateful_widget(t_preview, chunks[1], &mut TableState::default());
     }
 }
 
-fn make_table(entry: &Entry, config: &UiConfig) -> Table<'static> {
+fn make_table(entry: &Entry, path: String, config: &UiConfig) -> Table<'static> {
     let rows: Vec<Row> = entry
         .children
         .as_ref()
@@ -57,8 +59,12 @@ fn make_table(entry: &Entry, config: &UiConfig) -> Table<'static> {
 
     let widths = make_widths(config, get_max_size(entry));
     Table::new(rows, widths)
-        // .header(header)
-        .block(Block::default().borders(Borders::ALL).title("Table"))
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(path)
+                .title_style(Style::default().fg(ratatui::style::Color::Green).bold()),
+        )
         .highlight_style(Style::default().bg(ratatui::style::Color::Green))
         .highlight_symbol(">> ")
 }
