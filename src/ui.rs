@@ -62,8 +62,11 @@ fn make_table(entry: &Entry, path: String, config: &UiConfig) -> Table<'static> 
         .block(
             Block::default()
                 .borders(Borders::ALL)
-                .title(path)
-                .title_style(Style::default().fg(ratatui::style::Color::Green).bold()),
+                .title_top(path.green().bold())
+                .title_bottom(format!(
+                    "Total size: {}",
+                    number_humanized(entry.size, config.human_readable)
+                )),
         )
         .highlight_style(Style::default().bg(ratatui::style::Color::Green))
         .highlight_symbol(">> ")
