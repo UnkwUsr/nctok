@@ -70,25 +70,19 @@ fn make_table(entry: &Entry, path: String, config: &UiConfig) -> Table<'static> 
 }
 
 /// format human readable (for big numbers) and colorize
-fn styled_number(size: usize, human_readable: bool) -> (Cell<'static>, Cell<'static>) {
-    let t = if size < 1000 || !human_readable {
-        (Cell::from(size.to_string()), Cell::default())
-    } else {
-        human_format::Formatter::default()
-            .with_decimals(1)
-            .format(size as f64)
-            .split_once(' ')
-            .map(|(x, y)| (Cell::from(x.to_owned()), Cell::from(y.to_owned())))
-            .unwrap()
-    };
+fn styled_number(num: usize, human_readable: bool) -> (Cell<'static>, Cell<'static>) {
+    let (number, suffix) = number_humanized(num, human_readable)
+        .split_once(' ')
+        .map(|(x, y)| (Cell::from(x.to_owned()), Cell::from(y.to_owned())))
+        .unwrap();
 
     (
-        t.0.style(
+        number.style(
             Style::default()
                 .fg(ratatui::style::Color::Yellow)
                 .add_modifier(Modifier::BOLD),
         ),
-        t.1,
+        suffix,
     )
 }
 
@@ -126,4 +120,16 @@ fn get_max_size(entry: &Entry) -> usize {
         .iter()
         .next()
         .map_or(1, |x| x.first().unwrap().1.size)
+}
+
+fn number_humanized(num: usize, human_readable: bool) -> String {
+    if human_readable {
+        human_format::Formatter::default()
+            .with_decimals(if num < 1000 { 0 } else { 1 })
+            .format(num as f64)
+    } else {
+        // adding space for convenience. Here is invisible "suffix" after it (we then splitting by
+        // space)
+        num.to_string() + " "
+    }
 }
