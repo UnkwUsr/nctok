@@ -7,7 +7,7 @@ use crate::{entry::Entry, ui::ui, ConfigArgs};
 
 pub struct App<'a> {
     pub config: ConfigArgs,
-    pub state: TableState,
+    pub cursor: TableState,
     // usize in history is tablestate before traversing down, so we can revert it back when going
     // up
     // str is entry name
@@ -16,12 +16,12 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     pub fn new(root: &'a Entry, config: ConfigArgs) -> App<'a> {
-        let mut state = TableState::default();
-        state.select(Some(0));
+        let mut cursor = TableState::default();
+        cursor.select(Some(0));
 
         App {
             config,
-            state,
+            cursor,
             history: vec![(root, "", 0)],
         }
     }
@@ -35,7 +35,7 @@ impl<'a> App<'a> {
             .as_ref()
             .unwrap()
             .iter()
-            .nth(self.state.selected().unwrap())
+            .nth(self.cursor.selected().unwrap())
             .map(|x| (x.1, x.0.as_ref()))
             .unwrap()
     }
@@ -57,30 +57,30 @@ impl<'a> App<'a> {
 
     fn next(&mut self) {
         if let Some(childs) = &self.current().children {
-            if let Some(i) = self.state.selected() {
+            if let Some(i) = self.cursor.selected() {
                 if i < (childs.len() - 1) {
-                    self.state.select(Some(i + 1));
+                    self.cursor.select(Some(i + 1));
                 }
             }
         }
     }
 
     fn previous(&mut self) {
-        if let Some(i) = self.state.selected() {
+        if let Some(i) = self.cursor.selected() {
             if i > 0 {
-                self.state.select(Some(i - 1));
+                self.cursor.select(Some(i - 1));
             }
         }
     }
 
     fn first(&mut self) {
-        self.state.select(Some(0));
+        self.cursor.select(Some(0));
     }
 
     fn last(&mut self) {
         if let Some(childs) = &self.current().children {
             if !childs.is_empty() {
-                self.state.select(Some(childs.len() - 1));
+                self.cursor.select(Some(childs.len() - 1));
             }
         }
     }
@@ -93,8 +93,8 @@ impl<'a> App<'a> {
         }
 
         self.history
-            .push((new.0, new.1, self.state.selected().unwrap()));
-        self.state.select(Some(0));
+            .push((new.0, new.1, self.cursor.selected().unwrap()));
+        self.cursor.select(Some(0));
     }
 
     fn traverse_up(&mut self) {
@@ -102,7 +102,7 @@ impl<'a> App<'a> {
             return;
         }
         let (_, _, prev_state) = self.history.pop().unwrap();
-        self.state.select(Some(prev_state));
+        self.cursor.select(Some(prev_state));
     }
 
     fn toggle_preview(&mut self) {

@@ -30,7 +30,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
         .split(f.size());
 
     let t_main = make_table(app.current(), app.current_path(), &app.config.ui);
-    f.render_stateful_widget(t_main, chunks[0], &mut app.state);
+    f.render_stateful_widget(t_main, chunks[0], &mut app.cursor);
 
     if app.config.ui.preview {
         let entry = app.under_cursor().0;
