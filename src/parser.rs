@@ -23,13 +23,13 @@ impl Entry {
         let childs = self.children.get_or_insert(Default::default());
 
         if path.is_empty() {
-            childs.insert(
-                name,
-                Entry {
+            childs
+                .entry(name)
+                .and_modify(|x| x.size += value)
+                .or_insert(Entry {
                     size: value,
                     children: None,
-                },
-            );
+                });
             // TODO: future optimization (probably): sort once after everything added
             childs.sort_unstable_by(|_ak, av, _bk, bv| cmp_fn(av, bv));
             return;
