@@ -2,9 +2,12 @@
 name = "nctok"
 version = "0.1.0"
 authors = ["UnkwUsr <ktoto2707043@gmail.com>"]
-description = "A program for navigating through hierarchical structured data and analyzing them"
+description = """
+A program for interactive navigating through weighted hierarchical structured
+data and analyzing them. Weighted means that each item have its own value -
+number"""
 repository = "https://github.com/UnkwUsr/nctok"
-keywords = ["hierarchy", "tree", "navigation", "menu", "tui", "ncurses", "terminal"]
+keywords = ["hierarchy", "tree", "weighted", "navigation", "tui"]
 categories = ["command-line-utilities", "visualization"]
 license = "MIT"
 edition = "2021"
