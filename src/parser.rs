@@ -5,9 +5,9 @@ use std::io;
 #[derive(clap::Args)]
 pub struct ParserConfig {
     #[rustfmt::skip]
-    #[arg(long, default_value = " ", help = "Delimiter between element number value and path")]
+    #[arg(long, default_value = " ", help = "Delimiter between items number value and path")]
     pub number_delimiter: char,
-    #[arg(long, default_value = "/", help = "Separator in element path")]
+    #[arg(long, default_value = "/", help = "Separator in items path")]
     pub path_separator: char,
 }
 
