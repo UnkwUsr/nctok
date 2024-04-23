@@ -7,8 +7,8 @@ number)
 This is a nice tool for analyzing and researching datasets, and simplicity of
 input format makes it easy to write your own scripts that produces data you
 want to analyze fast, right in shell (like something in files, git meta data
-(number of commits per each file), etc. For more see [Examples](#Examples)
-section).
+(number of commits per each file), etc. For more see
+[examples](doc/examples.md)).
 
 ## Demo
 
@@ -16,7 +16,7 @@ File space usage:
 
 ![](https://github.com/UnkwUsr/nctok/assets/49063932/046a4cea-c37d-4827-bbc5-d523ffb58f43)
 
-Git commits per each file, linux kernel 6.8 repo:
+Git commits per file, linux kernel 6.8 repo:
 
 ![](https://github.com/UnkwUsr/nctok/assets/49063932/c30daaed-c873-4d74-bef1-ba3b714fb9ba)
 
@@ -25,7 +25,7 @@ Git commits per each file, linux kernel 6.8 repo:
 * interactive navigation
 * items sorted by their recursive weight-sums
 * accepts any data from stdin, so you can easily make your owns (see
-  [Examples](#Examples) section)
+  [examples](doc/examples.md))
   * input format can be altered (see [Configuration](#Configuration) section)
 * interface:
   * preview window (can be toggled)
@@ -44,7 +44,7 @@ Where `...` should produce output in format:
 <number> <path/to/another_item>
 ```
 
-For concrete usecases see [Examples](#Examples) section.
+For concrete usecases see [examples](doc/examples.md).
 
 ### Keys/control
 
@@ -74,10 +74,6 @@ Interface:
       --no-human-readable
           Disable formatting big numbers in human-readable (can also toggle with 'a' key)
 ```
-
-## Examples
-
-WIP
 
 ## Installation
 
