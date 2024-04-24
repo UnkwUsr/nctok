@@ -41,6 +41,15 @@ alias bycmnts="_tokei_helper comments"
 alias byblanks="_tokei_helper blanks"
 ```
 
+Also, tokei supports filtering by language (read more in tokei's help), and we
+can pass it to our aliases:
+
+```shell
+bycode -t c++
+bycode -t shell
+bycode -t c++,rust
+```
+
 ### lines count, words count (with coreutils `wc`)
 
 ```shell
