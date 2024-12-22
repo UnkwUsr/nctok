@@ -12,11 +12,11 @@ want to analyze fast, right in shell (like something in files, git meta data
 
 ## Demo
 
-File space usage:
+File space usage (files size):
 
 ![](https://github.com/UnkwUsr/nctok/assets/49063932/046a4cea-c37d-4827-bbc5-d523ffb58f43)
 
-Git commits per file, linux kernel 6.8 repo:
+Git commits count per file, linux kernel 6.8 repo:
 
 ![](https://github.com/UnkwUsr/nctok/assets/49063932/c30daaed-c873-4d74-bef1-ba3b714fb9ba)
 
