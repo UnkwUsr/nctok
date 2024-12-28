@@ -1,14 +1,19 @@
 # nctok
 
-A program for interactive navigating through weighted hierarchical structured
-data and analyzing them. (weighted means that each item have its own value -
-number)
+A TUI utility for interactive exploring weighted hierarchical structured data.
+("weighted" means that each item have its own value - number)
 
-This is a nice tool for analyzing and researching datasets, and simplicity of
-input format makes it easy to write your own scripts that produces data you
-want to analyze fast, right in shell (like something in files, git meta data
-(number of commits per each file), etc. For more see
-[examples](doc/examples.md)).
+Due to simplicity of input format, it's easy to write your own scripts that
+produces data you want to analyze, fast, right in the shell. See
+[examples](doc/examples.md).
+
+## What?
+
+Any hierarchical structured data, with fields having weights (number
+characteristic). Imagine filesystem with file size being weight characteristic.
+When displaying, each level items gets sorted by weight (sum of weights of
+children items). This way you see "heaviest" (= with max weight) item at each
+level of hierarchy.
 
 ## Demo
 
