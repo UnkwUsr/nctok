@@ -31,7 +31,7 @@ Git commits count per file, linux kernel 6.8 repo:
 * items sorted by their recursive weight-sums
 * accepts any data from stdin, so you can easily make your owns (see
   [examples](doc/examples.md))
-  * input format can be altered (see [Configuration](#Configuration) section)
+  * input format can be altered (see [configuration](#configuration) section)
 * interface:
   * preview window (can be toggled)
   * human-readable big numbers formatting (can be toggled)
@@ -81,6 +81,10 @@ Interface:
 ```
 
 ## Installation
+
+### On Arch Linux
+
+AUR package: [nctok-git](https://aur.archlinux.org/packages/nctok-git/)
 
 ### With cargo (from [crates.io](https://crates.io/crates/nctok))
 
